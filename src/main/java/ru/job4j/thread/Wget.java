@@ -37,6 +37,9 @@ public class Wget implements Runnable {
     }
 
     public static void main(String[] args) throws InterruptedException {
+        if (args.length != 2) {
+            throw new IllegalArgumentException("Must be 2 arguments, 1st is an url, 2nd is speed as a number");
+        }
         String url = args[0];
         int speed = Integer.parseInt(args[1]);
         Thread wget = new Thread(new Wget(url, speed));
