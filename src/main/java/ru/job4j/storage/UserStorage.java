@@ -11,17 +11,12 @@ public class UserStorage implements Storage, Transfer {
 
     @Override
     public synchronized boolean add(User user) {
-        store.put(user.getId(), user);
-        return true;
+        return store.putIfAbsent(user.getId(), user) != null;
     }
 
     @Override
     public synchronized boolean update(User user) {
-        if (!store.containsKey(user.getId())) {
-            return false;
-        }
-        store.put(user.getId(), user);
-        return true;
+        return store.replace(user.getId(), user) != null;
     }
 
     @Override
@@ -31,11 +26,11 @@ public class UserStorage implements Storage, Transfer {
 
     @Override
     public synchronized boolean transfer(int fromId, int toId, int amount) {
-        if (!store.containsKey(fromId) || !store.containsKey(toId)) {
-            return false;
-        }
         User userFrom = store.get(fromId);
         User userTo = store.get(toId);
+        if (userFrom == null || userTo == null) {
+            return false;
+        }
         if (userFrom.getAmount() < amount) {
             return false;
         }
