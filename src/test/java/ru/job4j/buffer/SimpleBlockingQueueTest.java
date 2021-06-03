@@ -1,7 +1,6 @@
-package ru.job4j.queue;
+package ru.job4j.buffer;
 
 import org.junit.Test;
-import ru.job4j.synch.SingleLockList;
 
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.*;
@@ -14,7 +13,11 @@ public class SimpleBlockingQueueTest {
         Thread producer = new Thread(
                 () -> {
                     for (int i = 0; i < 20; i++) {
-                        queue.offer(i);
+                        try {
+                            queue.offer(i);
+                        } catch (InterruptedException e) {
+                            Thread.currentThread().interrupt();
+                        }
                     }
                 },
                 "producer"
@@ -22,7 +25,11 @@ public class SimpleBlockingQueueTest {
         Thread consumer = new Thread(
                 () -> {
                     for (int i = 0; i < 11; i++) {
-                        queue.poll();
+                        try {
+                            queue.poll();
+                        } catch (InterruptedException e) {
+                            Thread.currentThread().interrupt();
+                        }
                     }
                 }
         );
