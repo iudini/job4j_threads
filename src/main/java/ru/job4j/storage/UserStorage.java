@@ -28,10 +28,7 @@ public class UserStorage implements Storage, Transfer {
     public synchronized boolean transfer(int fromId, int toId, int amount) {
         User userFrom = store.get(fromId);
         User userTo = store.get(toId);
-        if (userFrom == null || userTo == null) {
-            return false;
-        }
-        if (userFrom.getAmount() < amount) {
+        if (userFrom == null || userTo == null || userFrom.getAmount() < amount) {
             return false;
         }
         userFrom.setAmount(userFrom.getAmount() - amount);
