@@ -2,6 +2,10 @@ package ru.job4j.pool;
 
 import java.util.concurrent.RecursiveTask;
 
+/**
+ * Parallel searching index of any value in array.
+ * @param <T>
+ */
 public class ParallelIndexOf<T> extends RecursiveTask<Integer> {
     private final T[] array;
     private final int from;
@@ -22,6 +26,12 @@ public class ParallelIndexOf<T> extends RecursiveTask<Integer> {
         this.value = value;
     }
 
+    /**
+     * Check if array size is 10 or less, then stop forking and search index.
+     * Bring the middle index of array.
+     * Splits array on 2 arrays by middle index of initial array and start compute again.
+     * @return index of value in array, if not found then return -1.
+     */
     @Override
     protected Integer compute() {
         if (from - to <= 10) {
@@ -37,8 +47,8 @@ public class ParallelIndexOf<T> extends RecursiveTask<Integer> {
         ParallelIndexOf<T> rightIndex = new ParallelIndexOf<>(array, mid, to, value);
         leftIndex.fork();
         rightIndex.fork();
-        Integer left = (Integer) leftIndex.join();
-        Integer right = (Integer) rightIndex.join();
+        Integer left = leftIndex.join();
+        Integer right = rightIndex.join();
         return left > right ? left : right;
     }
 }
