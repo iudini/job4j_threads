@@ -49,6 +49,6 @@ public class ParallelIndexOf<T> extends RecursiveTask<Integer> {
         rightIndex.fork();
         Integer left = leftIndex.join();
         Integer right = rightIndex.join();
-        return left > right ? left : right;
+        return Math.max(left, right);
     }
 }
