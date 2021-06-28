@@ -19,7 +19,7 @@ public class Aggregator {
         this.url = url;
     }
 
-    private static CompletableFuture<String> getData(String url) {
+    private CompletableFuture<String> getData(String url) {
         return CompletableFuture.supplyAsync(() -> {
             StringBuilder builder = new StringBuilder();
             try (BufferedReader br = new BufferedReader(new InputStreamReader(new URL(url).openStream()))) {
@@ -28,10 +28,10 @@ public class Aggregator {
                 e.printStackTrace();
             }
             return builder.toString();
-        });
+        }, pool);
     }
 
-    private static Camera parse(JSONObject jsonObject) throws ExecutionException, InterruptedException {
+    private Camera parse(JSONObject jsonObject) throws ExecutionException, InterruptedException {
         JSONObject sourceDataUrl = new JSONObject(getData(jsonObject.getString("sourceDataUrl")).get());
         JSONObject tokenDataUrl = new JSONObject(getData(jsonObject.getString("tokenDataUrl")).get());
         int id = jsonObject.getInt("id");
@@ -64,13 +64,5 @@ public class Aggregator {
             }
         }
         return cameraList;
-    }
-
-    public static void main(String[] args) throws ExecutionException, InterruptedException {
-        Aggregator aggregator = new Aggregator("http://www.mocky.io/v2/5c51b9dd3400003252129fb5");
-        List<Camera> cameraList = aggregator.aggregate();
-        for (var cam : cameraList) {
-            System.out.println(cam);
-        }
     }
 }
